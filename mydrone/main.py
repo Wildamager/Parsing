@@ -53,33 +53,38 @@ def get_info(product):
             'price': price,
             'info':description}
 
-def get_pagination(url):
-    soup = get_soup(url)
+def get_pagination(link):
+    soup = get_soup(link)
     try:
         if soup.find('a', class_='cm-history ty-pagination__item hidden-phone ty-pagination__range cm-ajax')!=None:
             pagination = soup.find('div', class_='ty-pagination')
             end_num = pagination.find_all('a')[-1].text.split(' ')[-1]
+            print(int(end_num))
             return int(end_num)
         else:
             pagination = soup.find('div', class_='ty-pagination__items')
+            print(pagination.text.replace('\n','')[-1])
             return int(pagination.text.replace('\n','')[-1])
     except:
+        print(1)
         return 1
         
 
-def get_products(url):
-    for i in range(get_pagination(url)):
-        page = f'page-{i+1}/'
-        print(page)
-        soup = get_soup(url + page)
+def get_products(link):
+    products = []
+    for i in range(0,get_pagination(link)):
+        page = f'page-{str(i+1)}/'
+        print(link+page)
+        soup = get_soup(link+page)
         list_of_products = soup.find_all('div', class_ = 'ty-column3')
-        products = []
+        
         for product in list_of_products:
             try:
                 products.append(get_info(product))
             except:
                 continue
-        return products
+        
+    return products
         
     
 
